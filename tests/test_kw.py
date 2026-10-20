@@ -75,3 +75,21 @@ class Extractors(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Seo(unittest.TestCase):
+    def test_outputs(self):
+        from kw import seo
+        d = tempfile.mkdtemp(); os.makedirs(os.path.join(d, "px4"))
+        ch = [{"commit": "c" * 40, "short": "ccccccc", "date": "2026-10-01T00:00:00Z", "commit_url": "https://g/c", "file": "a.c",
+               "file_url": "https://g/f", "name": "MPC_XY_VEL", "kind": "changed", "old": "1", "new": "2", "pr_number": 5, "pr_url": "https://g/p"},
+              {"commit": "d" * 40, "short": "ddddddd", "date": "2026-10-02T00:00:00Z", "name": "NEW", "kind": "added", "old": None, "new": "1"}]
+        json.dump({"repo": "https://github.com/PX4/PX4-Autopilot", "changes": ch}, open(os.path.join(d, "px4", "changes.json"), "w"))
+        seo.main(d, {"site_url": "https://x", "projects": [{"slug": "px4"}]})
+        k = json.load(open(os.path.join(d, "knobs.json")))
+        self.assertEqual(k["count"], 1); self.assertEqual(k["knobs"][0]["slug"], "mpc-xy-vel-ccccccc")
+        page = open(os.path.join(d, "knobs", "px4", "mpc-xy-vel-ccccccc", "index.html")).read()
+        self.assertIn("TechArticle", page); self.assertIn("rel='canonical' href='https://x/knobs/px4/mpc-xy-vel-ccccccc/'", page)
+        self.assertIn("https://x/knobs/px4/mpc-xy-vel-ccccccc/", open(os.path.join(d, "sitemap.xml")).read())
+        self.assertIn("Sitemap: https://x/sitemap.xml", open(os.path.join(d, "robots.txt")).read())
+        self.assertTrue(os.path.exists(os.path.join(d, "px4", "knobs.json")))

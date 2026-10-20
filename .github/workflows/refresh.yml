@@ -67,6 +67,10 @@ jobs:
         env:
           PYTHONPATH: .knoblog-src:.
         run: python -m kw.pages
+      - name: Knob pages, JSON/Atom feeds, sitemap, robots
+        env:
+          PYTHONPATH: .knoblog-src:.
+        run: python -m kw.seo
       - name: Persist bot state (only changes when posting is live)
         run: |
           if [ -n "$(git status --porcelain data)" ]; then

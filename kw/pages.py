@@ -39,11 +39,11 @@ def main() -> int:
                      f"<a href='posts/#{slug}'>X feed</a> · <a href='digest/{slug}/latest.html'>digest</a></p><ul>{latest or '<li class=muted>No changed values in the window.</li>'}</ul></div>")
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>knobs-watch: changed defaults in big projects</title><link rel="stylesheet" href="kw.css"></head><body><main>
+<title>knobs-watch: changed defaults in big projects</title><meta name="description" content="Default parameters that changed recently in PyTorch, Kubernetes, Next.js, Home Assistant, PX4, Nav2 and ArduPilot, read from git history."><link rel="canonical" href="https://fitzyracing1.github.io/knobs-watch/"><link rel="alternate" type="application/atom+xml" href="feed.xml"><link rel="stylesheet" href="kw.css"></head><body><main>
 <h1>knobs-watch<span>.</span></h1>
 <p>Default parameters that changed recently in big open-source projects, read straight from their git history by
 <a href="https://github.com/fitzyracing1/knoblog">knoblog</a>. Every change links its commit and, where findable, its PR. Refreshed daily. Last build: {now}.</p>
-<p><a href="posts/">X feeds (one per project)</a> · <a href="digest/">Weekly digest + signup</a> · <a href="https://fitzyracing1.github.io/knobs/">What is a knob?</a> ·
+<p><a href="knobs/"><b>All changed knobs, one page each</b></a> · <a href="knobs.json">knobs.json</a> · <a href="feed.xml">Atom feed</a> · <a href="sitemap.xml">sitemap</a><br><a href="posts/">X feeds (one per project)</a> · <a href="digest/">Weekly digest + signup</a> · <a href="https://fitzyracing1.github.io/knobs/">What is a knob?</a> ·
 <a href="https://github.com/fitzyracing1/knobs-watch">source</a></p>
 <div class="grid">{''.join(cards)}</div></main></body></html>"""
     open(os.path.join(site, "index.html"), "w", encoding="utf-8").write(page)
