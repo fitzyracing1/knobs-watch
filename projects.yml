@@ -1,0 +1,28 @@
+# knobs-watch projects. Each one gets a knoblog site at /<slug>/, an X feed at /posts/<slug>.json and a weekly digest.
+# x.handle is the account the feed is meant for. Posting is OFF unless BOT_POSTING_ENABLED=true AND x.enabled: true AND
+# that project's four X_<SLUG>_* secrets are set (see README).
+site_url: https://fitzyracing1.github.io/knobs-watch
+window_days: 150
+projects:
+  - slug: pytorch
+    config: configs/pytorch.yml
+    x: {handle: '', enabled: false}
+  - slug: kubernetes
+    clone_depth: 6000   # merge-heavy: --shallow-since cuts the first-parent chain
+    config: configs/kubernetes.yml
+    x: {handle: '', enabled: false}
+  - slug: nextjs
+    config: configs/nextjs.yml
+    x: {handle: '', enabled: false}
+  - slug: home-assistant
+    config: configs/home-assistant.yml
+    x: {handle: '', enabled: false}
+  - slug: px4
+    config: configs/px4.yml
+    x: {handle: '', enabled: false}
+  - slug: ros2-nav2
+    config: configs/nav2.yml
+    x: {handle: '', enabled: false}
+  - slug: ardupilot
+    config: configs/ardupilot.yml
+    x: {handle: '', enabled: false}

@@ -1,0 +1,12 @@
+extends: generic
+name: PyTorch
+repo: https://github.com/pytorch/pytorch
+watch:
+  paths: ['torch/_inductor/config.py', 'torch/_dynamo/config.py', 'torch/_functorch/config.py', 'torch/_export/config.py']
+extractors:
+  - use: python_module_vars
+site:
+  title: PyTorch compiler config knobs
+  tagline: Every default change in torch._inductor, torch._dynamo, torch._functorch and torch._export config.
+why:
+  max_api_calls: 120

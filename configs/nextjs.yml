@@ -1,0 +1,13 @@
+extends: generic
+name: Next.js
+repo: https://github.com/vercel/next.js
+branch: canary
+watch:
+  paths: ['packages/next/src/server/config-shared.ts', 'packages/next/src/shared/lib/constants.ts', 'packages/next/src/shared/lib/image-config.ts']
+extractors:
+  - use: js_defaults
+site:
+  title: Next.js config default knobs
+  tagline: defaultConfig, image config and shared constants in the next package.
+why:
+  max_api_calls: 120

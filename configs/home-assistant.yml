@@ -1,0 +1,17 @@
+extends: generic
+name: Home Assistant
+repo: https://github.com/home-assistant/core
+branch: dev
+watch:
+  paths: ['homeassistant/const.py', 'homeassistant/components/*/const.py', 'homeassistant/core_config.py']
+extractors:
+  - use: python_const
+  - use: python_module_vars
+    paths: ['homeassistant/core_config.py']
+history:
+  max_commits: 200
+site:
+  title: Home Assistant default knobs
+  tagline: Constants and defaults in homeassistant/const.py and every integration's const.py.
+why:
+  max_api_calls: 120

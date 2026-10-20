@@ -1,0 +1,24 @@
+name: Weekly digest signup
+description: Ask for the weekly changed-defaults email for one or more projects.
+title: "Digest signup: "
+labels: [digest-signup]
+body:
+  - type: markdown
+    attributes:
+      value: "**Don't put your email address here; this issue is public.** Once the email provider is live, you'll get a private signup link in a reply. Until then, watch this repo → Custom → Releases, or use each project's Atom feed."
+  - type: checkboxes
+    id: projects
+    attributes:
+      label: Projects
+      options:
+        - label: PyTorch
+        - label: Kubernetes
+        - label: Next.js
+        - label: Home Assistant
+        - label: PX4
+        - label: ROS 2 / Nav2
+        - label: ArduPilot
+  - type: input
+    id: other
+    attributes:
+      label: Another project you'd like watched (optional)

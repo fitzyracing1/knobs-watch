@@ -1,0 +1,88 @@
+# Daily: refresh every project in projects.yml with knoblog, build the X feeds and weekly digests, deploy to Pages.
+# X posting: OFF unless repo variable BOT_POSTING_ENABLED == 'true' AND projects.yml x.enabled AND that project's secrets.
+# Email: OFF unless repo variable DIGEST_SENDING_ENABLED == 'true' AND DIGEST_PROVIDER + its key are set (Mondays only).
+name: refresh
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['projects.yml', 'configs/**', 'kw/**', '.github/workflows/refresh.yml']
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+env:
+  KNOBLOG_REF: e9fdd67141f9a9cba48f4cf8990d06deaa66b4e2   # knoblog with "why it changed" (fitzyracing1/knoblog#1); switch to a release tag once merged
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: fitzyracing1/knoblog
+          ref: ${{ env.KNOBLOG_REF }}
+          path: .knoblog-src
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v6
+        with:
+          path: .cache
+          key: kw-cache-${{ github.run_id }}
+          restore-keys: kw-cache-
+      - name: Build all projects
+        env:
+          PYTHONPATH: .knoblog-src:.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -m kw.build
+      - name: X feeds (dry run unless enabled)
+        env:
+          PYTHONPATH: .knoblog-src:.
+          BOT_POSTING_ENABLED: ${{ vars.BOT_POSTING_ENABLED }}
+          X_PX4_API_KEY: ${{ secrets.X_PX4_API_KEY }}
+          X_PX4_API_SECRET: ${{ secrets.X_PX4_API_SECRET }}
+          X_PX4_ACCESS_TOKEN: ${{ secrets.X_PX4_ACCESS_TOKEN }}
+          X_PX4_ACCESS_TOKEN_SECRET: ${{ secrets.X_PX4_ACCESS_TOKEN_SECRET }}
+          X_ROS2_NAV2_API_KEY: ${{ secrets.X_ROS2_NAV2_API_KEY }}
+          X_ROS2_NAV2_API_SECRET: ${{ secrets.X_ROS2_NAV2_API_SECRET }}
+          X_ROS2_NAV2_ACCESS_TOKEN: ${{ secrets.X_ROS2_NAV2_ACCESS_TOKEN }}
+          X_ROS2_NAV2_ACCESS_TOKEN_SECRET: ${{ secrets.X_ROS2_NAV2_ACCESS_TOKEN_SECRET }}
+        run: python -m kw.bot
+      - name: Weekly digest (send only on Mondays, and only if enabled)
+        env:
+          PYTHONPATH: .knoblog-src:.
+          DIGEST_SENDING_ENABLED: ${{ vars.DIGEST_SENDING_ENABLED }}
+          DIGEST_PROVIDER: ${{ vars.DIGEST_PROVIDER }}
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+        run: |
+          if [ "$(date -u +%u)" = "1" ] && [ "${{ github.event_name }}" = "schedule" ]; then python -m kw.digest --send; else python -m kw.digest; fi
+      - name: Index page
+        env:
+          PYTHONPATH: .knoblog-src:.
+        run: python -m kw.pages
+      - name: Persist bot state (only changes when posting is live)
+        run: |
+          if [ -n "$(git status --porcelain data)" ]; then
+            git config user.name knobs-watch-bot && git config user.email knobs-watch-bot@users.noreply.github.com
+            git add data && git commit -m "bot state" && git push
+          fi
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v5

@@ -1,0 +1,21 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: fitzyracing1/knoblog
+          ref: e9fdd67141f9a9cba48f4cf8990d06deaa66b4e2
+          path: .knoblog-src
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: PYTHONPATH=.knoblog-src:. python -m unittest discover -s tests -v

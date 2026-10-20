@@ -1,0 +1,15 @@
+extends: generic
+name: Kubernetes
+repo: https://github.com/kubernetes/kubernetes
+watch:
+  paths: ['pkg/apis/**/defaults.go', 'pkg/kubelet/apis/config/**/defaults.go', 'pkg/scheduler/apis/config/**/default*.go',
+          'pkg/controller/**/config/**/defaults.go', 'cmd/kubeadm/app/apis/**/defaults.go', 'cmd/kubeadm/app/constants/constants.go',
+          'staging/src/k8s.io/apiserver/pkg/server/options/*.go']
+  exclude: ['**/*_test.go', '**/zz_generated*']
+extractors:
+  - use: go_defaults
+site:
+  title: Kubernetes API and component default knobs
+  tagline: SetDefaults_* assignments and Default* constants across Kubernetes APIs, kubelet, scheduler, controllers and kubeadm.
+why:
+  max_api_calls: 120
