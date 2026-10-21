@@ -29,6 +29,10 @@ jobs:
           repository: fitzyracing1/knoblog
           ref: ${{ env.KNOBLOG_REF }}
           path: .knoblog-src
+      - name: Heat report (start sampling)
+        uses: fitzyracing1/heatgate@b79f54886ee50c8364889fe7b80c643fdb3726c1  # heat-report-action (fitzyracing1/heatgate#2); switch to a tag once merged
+        continue-on-error: true
+        with: {mode: start, interval: "5"}
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -81,6 +85,11 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
+      - name: Heat report (summary)
+        if: always()
+        uses: fitzyracing1/heatgate@b79f54886ee50c8364889fe7b80c643fdb3726c1  # heat-report-action (fitzyracing1/heatgate#2); switch to a tag once merged
+        continue-on-error: true
+        with: {mode: stop, artifact: heat-report}
   deploy:
     needs: build
     runs-on: ubuntu-latest
